@@ -1,4 +1,5 @@
 import { MyRuleTester, js } from "./rule-tester.js";
+import { messageIds } from "../src/messages.js";
 
 new MyRuleTester().run("/resetting-state-from-props", {
   invalid: [
@@ -17,18 +18,18 @@ new MyRuleTester().run("/resetting-state-from-props", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidResettingStateFromProps",
+          messageId: messageIds.avoidResettingStateFromProps,
         },
         // TODO: Maybe early return to skip these flags?
         // Kinda confusing for user
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
       ],
     },
@@ -49,13 +50,13 @@ new MyRuleTester().run("/resetting-state-from-props", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
       ],
     },

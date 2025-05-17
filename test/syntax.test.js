@@ -1,4 +1,5 @@
 import { MyRuleTester, js } from "./rule-tester.js";
+import { messageIds } from "../src/messages.js";
 
 // TODO: Should maybe do away with this... it helps writing but not readable
 const code = ({
@@ -317,10 +318,10 @@ new MyRuleTester().run("/syntax", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
       ],
     },

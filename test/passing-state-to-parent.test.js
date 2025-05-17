@@ -1,4 +1,5 @@
 import { MyRuleTester, js } from "./rule-tester.js";
+import { messageIds } from "../src/messages.js";
 
 new MyRuleTester().run("/passing-state-to-parent", {
   // TODO: Test with intermediate state too
@@ -16,10 +17,10 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidPassingStateToParent",
+          messageId: messageIds.avoidPassingStateToParent,
         },
       ],
     },
@@ -38,10 +39,10 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidPassingStateToParent",
+          messageId: messageIds.avoidPassingStateToParent,
         },
       ],
     },
@@ -63,7 +64,7 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         // TODO: Is `avoidPassingStateToParent` still appropriate here? Similar issue.
         // Maybe we could rename the message to make sense here too.
@@ -84,7 +85,7 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: "avoidPassingStateToParent",
+          messageId: messageIds.avoidPassingStateToParent,
         },
       ],
     },
@@ -113,12 +114,12 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
           // Ideally we catch using state as an event handler,
           // but not sure how to differentiate that
-          messageId: "avoidPassingStateToParent",
+          messageId: messageIds.avoidPassingStateToParent,
         },
       ],
     },
@@ -136,10 +137,10 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidManagingParentBehavior",
+          messageId: messageIds.avoidManagingParentBehavior,
         },
       ],
     },

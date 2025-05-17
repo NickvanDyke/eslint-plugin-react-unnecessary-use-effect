@@ -1,4 +1,5 @@
 import { MyRuleTester, js } from "./rule-tester.js";
+import { messageIds } from "../src/messages.js";
 
 new MyRuleTester().run("/using-state-as-event-handler", {
   invalid: [
@@ -30,7 +31,7 @@ new MyRuleTester().run("/using-state-as-event-handler", {
       `,
       errors: [
         {
-          messageId: "avoidEventHandler",
+          messageId: messageIds.avoidEventHandler,
         },
       ],
     },

@@ -1,3 +1,4 @@
+import { messageIds, messages } from "./messages.js";
 import { getUpstreamVariables } from "./util/ast.js";
 import {
   isFnRef,
@@ -12,6 +13,9 @@ import {
 
 export const name = "you-might-not-need-an-effect";
 
+// TODO: Include `useLayoutEffect`?
+// TODO: Possible to detect when `useSyncExternalStore` should be preferred?
+
 export const rule = {
   meta: {
     type: "suggestion",
@@ -20,36 +24,7 @@ export const rule = {
       url: "https://react.dev/learn/you-might-not-need-an-effect",
     },
     schema: [],
-    // TODO: Could include more info in messages, like the relevant node
-    // TODO: Possible to detect and warn when `useSyncExternalStore` should be preferred?
-    messages: {
-      // Overall warning
-      avoidInternalEffect:
-        "This effect operates entirely on internal React state, with no external dependencies. It is likely unnecessary.",
-
-      // State setter warnings
-      avoidDerivedState:
-        'Avoid storing derived state. Compute "{{state}}" directly during render, optionally with `useMemo` if it\'s expensive.',
-      avoidInitializingState:
-        "Avoid initializing state in an effect. Instead, pass the initial value to `useState`.",
-      avoidChainingState:
-        "Avoid chaining state changes. When possible, update all relevant state simultaneously.",
-
-      // Prop warnings
-      avoidManagingParentBehavior:
-        "Avoid managing parent behavior. Instead, lift this logic up to the parent component.",
-      avoidPassingStateToParent:
-        "Avoid making parent components depend on a child's intermediate state. If the parent needs live updates, consider lifting state up.",
-      avoidResettingStateFromProps:
-        "Avoid resetting state from props. If the prop is a key, pass it as `key` instead so React will reset the component.",
-
-      // TODO: This would be nice, but I'm not sure it can be done accurately
-      // Maybe we can accurately warn about this when the state being reacted to is one of our own `useState`s?
-      // Because if we have a setter then we have a callback.
-      // But, I think that would also warn about valid uses that synchronize internal state to external state.
-      // avoidEventHandler:
-      //   "Avoid using state as an event handler. Instead, call the event handler directly.",
-    },
+    messages: messages,
   },
   create: (context) => ({
     CallExpression: (node) => {
@@ -72,14 +47,14 @@ export const rule = {
       if (isInternalEffect) {
         context.report({
           node,
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         });
       }
 
       if (isPropsUsedToResetAllState(context, effectFnRefs, depsRefs, node)) {
         context.report({
           node: node,
-          messageId: "avoidResettingStateFromProps",
+          messageId: messageIds.avoidResettingStateFromProps,
         });
       }
 
@@ -90,7 +65,7 @@ export const rule = {
         // Basically combine it with `avoidPassingStateToParent`.
         context.report({
           node: node,
-          messageId: "avoidManagingParentBehavior",
+          messageId: messageIds.avoidManagingParentBehavior,
         });
       }
 
@@ -122,7 +97,7 @@ export const rule = {
               if (isDepInArgs) {
                 context.report({
                   node: callExpr,
-                  messageId: "avoidDerivedState",
+                  messageId: messageIds.avoidDerivedState,
                   data: { state: useStateNode.id.elements[0].name },
                 });
               } else if (
@@ -135,12 +110,12 @@ export const rule = {
                 // Like this seems more appropriate than "derived" state.
                 context.report({
                   node: callExpr,
-                  messageId: "avoidChainingState",
+                  messageId: messageIds.avoidChainingState,
                 });
               } else {
                 context.report({
                   node: callExpr,
-                  messageId: "avoidInitializingState",
+                  messageId: messageIds.avoidInitializingState,
                 });
               }
             }
@@ -160,7 +135,7 @@ export const rule = {
           if (isPropRef(context, ref) && callExpr.arguments.length > 0) {
             context.report({
               node: callExpr,
-              messageId: "avoidPassingStateToParent",
+              messageId: messageIds.avoidPassingStateToParent,
             });
           }
         });

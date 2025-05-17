@@ -1,4 +1,5 @@
 import { MyRuleTester, js } from "./rule-tester.js";
+import { messageIds } from "../src/messages.js";
 
 new MyRuleTester().run("/chaining-state", {
   invalid: [
@@ -28,10 +29,10 @@ new MyRuleTester().run("/chaining-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
       ],
     },
@@ -51,10 +52,10 @@ new MyRuleTester().run("/chaining-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidChainingState",
+          messageId: messageIds.avoidChainingState,
         },
       ],
     },

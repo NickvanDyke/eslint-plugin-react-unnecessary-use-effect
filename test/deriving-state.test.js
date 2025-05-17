@@ -1,4 +1,5 @@
 import { MyRuleTester, js } from "./rule-tester.js";
+import { messageIds } from "../src/messages.js";
 
 new MyRuleTester().run("/deriving-state", {
   valid: [
@@ -175,10 +176,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
@@ -199,10 +200,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
@@ -223,10 +224,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
@@ -244,10 +245,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
@@ -266,10 +267,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
@@ -290,10 +291,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "doubleList" },
         },
       ],
@@ -313,10 +314,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "doubleList" },
         },
       ],
@@ -337,7 +338,7 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
       ],
     },
@@ -360,7 +361,7 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "selectedPost" },
         },
       ],
@@ -381,7 +382,7 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
@@ -400,10 +401,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "total" },
         },
       ],
@@ -427,10 +428,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "formData" },
         },
       ],
@@ -455,10 +456,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "formData" },
         },
       ],
@@ -484,10 +485,10 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidInternalEffect",
+          messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "formData" },
         },
       ],
@@ -510,7 +511,7 @@ new MyRuleTester().run("/deriving-state", {
       `,
       errors: [
         {
-          messageId: "avoidDerivedState",
+          messageId: messageIds.avoidDerivedState,
           data: { state: "fullName" },
         },
       ],
