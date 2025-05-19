@@ -412,7 +412,6 @@ new MyRuleTester().run("/deriving-state", {
     },
     {
       name: "From internal state with callback setter",
-      todo: true,
       code: js`
         function CountAccumulator({ count }) {
           const [total, setTotal] = useState(count);
@@ -461,7 +460,6 @@ new MyRuleTester().run("/deriving-state", {
     },
     {
       name: "Partially update complex state from props with callback setter",
-      todo: true,
       code: js`
         function Form({ firstName, lastName }) {
           const [formData, setFormData] = useState({
