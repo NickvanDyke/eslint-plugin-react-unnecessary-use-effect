@@ -90,10 +90,7 @@ export function getDependencyRefs(context, node) {
     );
 }
 
-export const isFnRef = (ref) =>
-  ref.identifier.parent.type === "CallExpression" &&
-  // ref.identifier.parent will also be CallExpression when the ref is a direct argument, which we don't want
-  ref.identifier.parent.callee === ref.identifier;
+export const isFnRef = (ref) => getCallExpr(ref) !== undefined;
 
 export const isStateRef = (context, ref) =>
   getUseStateNode(context, ref) !== undefined;
@@ -110,6 +107,25 @@ export const isPropRef = (context, ref) =>
         ),
     ),
   );
+
+export const getCallExpr = (ref, current = ref.identifier.parent) => {
+  if (current.type === "CallExpression") {
+    // Check if the callee matches the ref (either Identifier or MemberExpression)
+    if (
+      current.callee === ref.identifier ||
+      current.callee === ref.identifier.parent
+    ) {
+      return current;
+    }
+  }
+
+  // If the current node is a MemberExpression, walk up
+  if (current.type === "MemberExpression") {
+    return getCallExpr(ref, current.parent);
+  }
+
+  return undefined;
+};
 
 export const getUseStateNode = (context, stateRef) => {
   return getUpstreamVariables(context, stateRef.identifier)

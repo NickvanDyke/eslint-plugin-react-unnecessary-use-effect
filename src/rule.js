@@ -9,6 +9,7 @@ import {
   getEffectBodyRefs,
   getDependencyRefs,
   getUseStateNode,
+  getCallExpr,
 } from "./util/react.js";
 
 export const name = "you-might-not-need-an-effect";
@@ -59,16 +60,14 @@ export const rule = {
       }
 
       effectFnRefs
-        // Eagerly filter out everything but state setters and prop callbacks;
-        // We can't reliably analyze external functions.
+        // Analyze only state setters and prop callbacks
         .filter(
           (ref) =>
-            // FIX: Sometimes crashes on undefined when we remove isFnRef. Should fix that in case of other edgecases.
             isFnRef(ref) &&
             (isStateRef(context, ref) || isPropRef(context, ref)),
         )
         .forEach((ref) => {
-          const callExpr = ref.identifier.parent;
+          const callExpr = getCallExpr(ref);
           const isDepInArgs = callExpr.arguments.some((arg) =>
             getUpstreamVariables(context, arg).some((variable) =>
               depsRefs.some(

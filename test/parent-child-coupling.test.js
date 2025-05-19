@@ -123,13 +123,14 @@ new MyRuleTester().run("/parent-child-coupling", {
       ],
     },
     {
-      name: "Calling prop in response to prop change",
-      only: true,
+      name: "Call prop in response to prop change",
       code: js`
         function Form({ isOpen, events }) {
 
           useEffect(() => {
             if (!isOpen) {
+              // NOTE: Also verifies that we consider events in events.onClose to be a fn ref
+              // (It's a MemberExpression under a CallExpression)
               // FIX: Oh interesting, scope.references only includes events, not onClose.
               // Thus we don't analyze it because the Identifier's direct parent is MemberExpression, not CallExpression.
               // Solution may be to map the MemberExpression to its parent CallExpression?
