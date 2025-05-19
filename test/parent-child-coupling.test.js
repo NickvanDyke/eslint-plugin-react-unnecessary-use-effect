@@ -5,7 +5,7 @@ new MyRuleTester().run("/parent-child-coupling", {
   // TODO: Test with intermediate state too
   invalid: [
     {
-      name: "Internal state",
+      name: "Pass internal live state",
       code: js`
         const Child = ({ onFetched }) => {
           const [data, setData] = useState();
@@ -25,7 +25,7 @@ new MyRuleTester().run("/parent-child-coupling", {
       ],
     },
     {
-      name: "Internal state via derived prop",
+      name: "Pass internal live state via derived prop",
       code: js`
         const Child = ({ onFetched }) => {
           const [data, setData] = useState();
@@ -47,7 +47,7 @@ new MyRuleTester().run("/parent-child-coupling", {
       ],
     },
     {
-      name: "No argument prop callback in response to internal state change",
+      name: "No-arg prop callback in response to internal state change",
       code: js`
         function Form({ onClose }) {
           const [name, setName] = useState();
@@ -72,7 +72,7 @@ new MyRuleTester().run("/parent-child-coupling", {
       ],
     },
     {
-      name: "External state live",
+      name: "Pass live external state",
       code: js`
         const Child = ({ onFetched }) => {
           const data = useSomeAPI();
@@ -89,7 +89,7 @@ new MyRuleTester().run("/parent-child-coupling", {
       ],
     },
     {
-      name: "External state final",
+      name: "Pass final external state",
       code: js`
         function Form({ onSubmit }) {
           const [name, setName] = useState();
@@ -129,11 +129,8 @@ new MyRuleTester().run("/parent-child-coupling", {
 
           useEffect(() => {
             if (!isOpen) {
-              // NOTE: Also verifies that we consider events in events.onClose to be a fn ref
+              // NOTE: Also verifies that we consider 'events' in 'events.onClose' to be a fn ref
               // (It's a MemberExpression under a CallExpression)
-              // FIX: Oh interesting, scope.references only includes events, not onClose.
-              // Thus we don't analyze it because the Identifier's direct parent is MemberExpression, not CallExpression.
-              // Solution may be to map the MemberExpression to its parent CallExpression?
               events.onClose();
             }
           }, [isOpen]);
@@ -142,6 +139,44 @@ new MyRuleTester().run("/parent-child-coupling", {
       errors: [
         {
           messageId: messageIds.avoidInternalEffect,
+        },
+        {
+          messageId: messageIds.avoidParentChildCoupling,
+        },
+      ],
+    },
+    {
+      name: "Derive state from prop function",
+      only: true,
+      code: js`
+        function FilteredPosts({ posts }) {
+          const [filteredPosts, setFilteredPosts] = useState([]);
+
+          useEffect(() => {
+            // Resulting AST node looks like:
+            // {
+            //   "type": "ArrayPattern",
+            //   "elements": [
+            //     null, <-- Must handle this!
+            //     {
+            //       "type": "Identifier",
+            //       "name": "second"
+            //     }
+            //   ]
+            // }
+            setFilteredPosts(
+              // FIX: Fails because we check whether value is internal, which of course it isn't (and could never be)
+              posts.filter(([, value]) => value !== "")
+            );
+          }, [posts]);
+        }
+      `,
+      errors: [
+        {
+          messageId: messageIds.avoidInternalEffect,
+        },
+        {
+          messageId: messageIds.avoidDerivedState,
         },
         {
           messageId: messageIds.avoidParentChildCoupling,

@@ -122,7 +122,8 @@ new MyRuleTester().run("/syntax", {
     {
       name: "Destructured array skips element in arrow function params",
       code: js`
-        function FilteredPosts({ posts }) {
+        function FilteredPosts() {
+          const posts = useSomeAPI();
           const [filteredPosts, setFilteredPosts] = useState([]);
 
           useEffect(() => {

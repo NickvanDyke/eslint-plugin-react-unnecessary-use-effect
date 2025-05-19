@@ -34,6 +34,7 @@ export const rule = {
       }
 
       const effectFnRefs = getEffectBodyRefs(context, node);
+      console.log("effectFnRefs", effectFnRefs);
       const depsRefs = getDependencyRefs(context, node);
 
       if (!effectFnRefs || !depsRefs || effectFnRefs.length === 0) {
@@ -82,7 +83,7 @@ export const rule = {
               // TODO: Should be: Either this is the only call to the state setter, or the args are all internal (including intermediates).
               // Needs to be outside `isInternalEffect` check for the former.
               // Does it matter whether the args are in the deps array?
-              // I guess so, to differentiate between derived and chain state updates.
+              // I guess so, to differentiate between derived and chain state updates?
               if (isDepInArgs) {
                 context.report({
                   node: callExpr,

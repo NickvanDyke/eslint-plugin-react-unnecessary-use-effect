@@ -174,8 +174,8 @@ new MyRuleTester().run("/deriving-state", {
             setCount(newCount);
           }, [countGetter, setCount]);
         }
-      `
-    }
+      `,
+    },
   ],
   invalid: [
     {
@@ -291,15 +291,12 @@ new MyRuleTester().run("/deriving-state", {
       ],
     },
     {
-      // Assumes the function is pure because it's called on internal state
       name: "From props via member function",
       code: js`
         function DoubleList({ list }) {
           const [doubleList, setDoubleList] = useState([]);
 
           useEffect(() => {
-            // list.concat is a call expression, but it's
-            // considered a prop call, thus still internal
             setDoubleList(list.concat(list));
           }, [list]);
         }
@@ -312,10 +309,13 @@ new MyRuleTester().run("/deriving-state", {
           messageId: messageIds.avoidDerivedState,
           data: { state: "doubleList" },
         },
+        {
+          // NOTE: We consider `list.concat` to essentially be a prop callback
+          messageId: messageIds.avoidParentChildCoupling,
+        },
       ],
     },
     {
-      // Assumes the function is pure because it's called on state
       name: "From internal state via member function",
       code: js`
         function DoubleList() {
@@ -335,10 +335,14 @@ new MyRuleTester().run("/deriving-state", {
           messageId: messageIds.avoidDerivedState,
           data: { state: "doubleList" },
         },
+        {
+          // NOTE: We consider `list.concat` to essentially be a state setter call
+          messageId: messageIds.avoidDerivedState,
+          data: { state: "list" },
+        },
       ],
     },
     {
-      // Assumes the function is pure because it's called on state
       name: "Mutate internal state",
       code: js`
         function DoubleList() {
@@ -346,7 +350,6 @@ new MyRuleTester().run("/deriving-state", {
           const [doubleList, setDoubleList] = useState([]);
 
           useEffect(() => {
-            // TODO: I think it doesn't warn about derived state because doubleList is not a function call, so we filter it out
             doubleList.push(...list);
           }, [list]);
         }
@@ -354,6 +357,11 @@ new MyRuleTester().run("/deriving-state", {
       errors: [
         {
           messageId: messageIds.avoidInternalEffect,
+        },
+        {
+          // NOTE: We consider `doubleList.push` to essentially be a state setter call
+          messageId: messageIds.avoidDerivedState,
+          data: { state: "doubleList" },
         },
       ],
     },
