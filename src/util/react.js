@@ -60,6 +60,9 @@ export const getEffectBodyRefs = (context, node) => {
     scope.references.concat(
       scope.childScopes.flatMap((childScope) => getRefs(childScope)),
     );
+  // .filter((ref) =>
+  //   ref.resolved?.defs.every((def) => def.type !== "Parameter"),
+  // );
 
   return getRefs(context.sourceCode.getScope(effectFn));
 };
@@ -69,6 +72,9 @@ export const getEffectBodyRefs = (context, node) => {
 // I believe it behaves the same due to filtering by `findVariable`.
 // TODO: Share implementation though?
 // Basically use this impl for both, instead of scope.references for other?
+// Hmm maybe not; not traversing CallExpr.arguments could be a problem for that use.
+// e.g. when a prop is passed to a state setter.
+// Or maybe that's fine? We'll still analyze the state setter, where we then explicitly check its arguments.
 export function getDependencyRefs(context, node) {
   if (!isUseEffect(node) || node.arguments.length < 2) {
     return null;

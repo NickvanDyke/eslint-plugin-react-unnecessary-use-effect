@@ -165,8 +165,9 @@ new MyRuleTester().run("/parent-child-coupling", {
             //   ]
             // }
             setFilteredPosts(
-              // FIX: Fails because we check whether value is internal, which of course it isn't (and could never be)
-              posts.filter(([, value]) => value !== "")
+              // FIX: Fails because we check whether value is internal, which of course it isn't (and could never be).
+              // Now the issue is, how do we ignore it when variable.def.type === Parameter, without ignoring props that also have that property?
+              posts.filter((post) => post.body !== "")
             );
           }, [posts]);
         }
