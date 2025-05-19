@@ -3,8 +3,7 @@ export const messageIds = {
   avoidDerivedState: "avoidDerivedState",
   avoidInitializingState: "avoidInitializingState",
   avoidChainingState: "avoidChainingState",
-  avoidManagingParentBehavior: "avoidManagingParentBehavior",
-  avoidPassingStateToParent: "avoidPassingStateToParent",
+  avoidParentChildCoupling: "avoidParentChildCoupling",
   avoidResettingStateFromProps: "avoidResettingStateFromProps",
   // TODO: This would be nice, but I'm not sure it can be done accurately
   // Maybe we can accurately warn about this when the state being reacted to is one of our own `useState`s?
@@ -23,10 +22,8 @@ export const messages = {
     "Avoid initializing state in an effect. Instead, pass the initial value to `useState`.",
   [messageIds.avoidChainingState]:
     "Avoid chaining state changes. When possible, update all relevant state simultaneously.",
-  [messageIds.avoidManagingParentBehavior]:
-    "Avoid managing parent behavior. Instead, lift this logic up to the parent component.",
-  [messageIds.avoidPassingStateToParent]:
-    "Avoid making parent components depend on a child's intermediate state. If the parent needs live updates, consider lifting state up.",
+  [messageIds.avoidParentChildCoupling]:
+    "Avoid coupling parent behavior or state to a child component. Instead, lift shared logic or state up to the parent.",
   [messageIds.avoidResettingStateFromProps]:
     "Avoid resetting state from props. If the prop is a key, pass it as `key` instead so React will reset the component.",
   // [messages.avoidEventHandler]:

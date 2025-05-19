@@ -6,8 +6,8 @@ import {
   isPropsUsedToResetAllState,
   isStateRef,
   isUseEffect,
-  getEffectFnRefs,
-  getDepArrRefs,
+  getEffectBodyRefs,
+  getDependencyRefs,
   getUseStateNode,
 } from "./util/react.js";
 
@@ -32,8 +32,8 @@ export const rule = {
         return;
       }
 
-      const effectFnRefs = getEffectFnRefs(context, node);
-      const depsRefs = getDepArrRefs(context, node);
+      const effectFnRefs = getEffectBodyRefs(context, node);
+      const depsRefs = getDependencyRefs(context, node);
 
       if (!effectFnRefs || !depsRefs || effectFnRefs.length === 0) {
         return;
@@ -58,22 +58,12 @@ export const rule = {
         });
       }
 
-      if (
-        effectFnRefs.concat(depsRefs).every((ref) => isPropRef(context, ref))
-      ) {
-        // TODO: Generalize this to not need the entire effect?
-        // Basically combine it with `avoidPassingStateToParent`.
-        context.report({
-          node: node,
-          messageId: messageIds.avoidManagingParentBehavior,
-        });
-      }
-
       effectFnRefs
         // Eagerly filter out everything but state setters and prop callbacks;
         // We can't reliably analyze external functions.
         .filter(
           (ref) =>
+            // FIX: Sometimes crashes on undefined when we remove isFnRef. Should fix that in case of other edgecases.
             isFnRef(ref) &&
             (isStateRef(context, ref) || isPropRef(context, ref)),
         )
@@ -121,21 +111,23 @@ export const rule = {
             }
           }
 
-          // I'm pretty sure we can flag this regardless of the arguments...
-          // Even if they are external state, we shouldn't pass them to the parent.
+          // I'm pretty sure we can flag this regardless of the arguments, including none...
+          //
           // Because we are either:
           // 1. Passing live state updates to the parent
           // 2. Using state as an event handler to pass final state to the parent
+          //
           // Both are bad. However I'm not yet sure how we could differentiate #2 to give a better warning.
-          // TODO: Thus can we safely assume that state is used as an event handler when the ref is a prop?
+          //
+          // TODO: Can we thus safely assume that state is used as an event handler when the ref is a prop?
           // Normally we can't warn about that because we don't know what the event handler does externally.
           // But when it's a prop, it's internal.
           // I guess it could still be valid when the dep is external state? Or in that case,
           // the issue is the state should be lifted to the parent?
-          if (isPropRef(context, ref) && callExpr.arguments.length > 0) {
+          if (isPropRef(context, ref)) {
             context.report({
               node: callExpr,
-              messageId: messageIds.avoidPassingStateToParent,
+              messageId: messageIds.avoidParentChildCoupling,
             });
           }
         });

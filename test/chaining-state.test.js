@@ -59,5 +59,28 @@ new MyRuleTester().run("/chaining-state", {
         },
       ],
     },
+    {
+      name: "Using prop in state initializer",
+      code: js`
+        function List({ items }) {
+          // Verify that 'setSelection' is not considered a prop ref
+          // just because 'items' is on its definition path.
+          // If it did, it'd flag 'avoidParentChildCoupling'.
+          const [selection, setSelection] = useState(items[0]);
+
+          useEffect(() => {
+            setSelection(null);
+          }, [items]);
+        }
+      `,
+      errors: [
+        {
+          messageId: messageIds.avoidInternalEffect,
+        },
+        {
+          messageId: messageIds.avoidChainingState,
+        },
+      ],
+    },
   ],
 });

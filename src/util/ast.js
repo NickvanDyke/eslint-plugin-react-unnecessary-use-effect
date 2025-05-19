@@ -24,6 +24,7 @@ export const traverse = (context, node, visit, visited = new Set()) => {
     .forEach((child) => traverse(context, child, visit, visited));
 };
 
+// TODO: Could be getDownstreamVariables; we always use it as such.
 export const getDownstreamIdentifiers = (context, rootNode) => {
   const identifiers = [];
   traverse(context, rootNode, (node) => {

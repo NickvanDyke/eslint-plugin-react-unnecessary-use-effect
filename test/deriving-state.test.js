@@ -1,6 +1,7 @@
 import { MyRuleTester, js } from "./rule-tester.js";
 import { messageIds } from "../src/messages.js";
 
+// TODO: All these need the state setter in the deps
 new MyRuleTester().run("/deriving-state", {
   valid: [
     {
@@ -161,6 +162,20 @@ new MyRuleTester().run("/deriving-state", {
         }
       `,
     },
+    {
+      name: "From external state via member function",
+      code: js`
+        function Counter() {
+          const countGetter = useSomeAPI();
+          const [count, setCount] = useState(0);
+
+          useEffect(() => {
+            const newCount = countGetter.getCount();
+            setCount(newCount);
+          }, [countGetter, setCount]);
+        }
+      `
+    }
   ],
   invalid: [
     {

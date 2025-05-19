@@ -55,7 +55,7 @@ new MyRuleTester().run("/syntax", {
       `,
     },
     {
-      // We don't follow functions right now
+      // TODO: We don't follow functions right now
       name: "Passing non-anonymous function to effect",
       code: js`
         function Form({ onClose }) {
@@ -224,7 +224,7 @@ new MyRuleTester().run("/syntax", {
       errors: 2,
     },
     {
-      name: "Arbitrarily deep member access in effect",
+      name: "Doubly deep MemberExpression in effect",
       code: code({
         componentDeclaration: js`function DoubleCounter(props)`,
         effectBody: js`setDoubleCount(props.nested.count * 2)`,
@@ -270,7 +270,7 @@ new MyRuleTester().run("/syntax", {
       errors: 2,
     },
     {
-      name: "Arbitrarily deep nested scopes in effect body",
+      name: "Doubly nested scopes in effect body",
       code: code({
         effectBody: js`
             {
@@ -301,29 +301,6 @@ new MyRuleTester().run("/syntax", {
         }
       `,
       errors: 2,
-    },
-    {
-      name: "Using prop in state initializer",
-      code: js`
-        function List({ items }) {
-          // Verify that 'setSelection' is not considered a prop ref
-          // just because 'items' is on its definition path.
-          // If it did, it'd flag 'avoidManagingParentBehavior'.
-          const [selection, setSelection] = useState(items[0]);
-
-          useEffect(() => {
-            setSelection(null);
-          }, [items]);
-        }
-      `,
-      errors: [
-        {
-          messageId: messageIds.avoidInternalEffect,
-        },
-        {
-          messageId: messageIds.avoidChainingState,
-        },
-      ],
     },
   ],
 });

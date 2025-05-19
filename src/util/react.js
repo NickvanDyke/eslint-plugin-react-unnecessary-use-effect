@@ -44,7 +44,9 @@ export const getEffectFn = (node) => {
   return effectFn;
 };
 
-export const getEffectFnRefs = (context, node) => {
+// NOTE: When `MemberExpression` (even nested ones), a `Reference` is only the root object, not the function.
+// TODO: And what about e.g. we have a .filter((param) => ...)?
+export const getEffectBodyRefs = (context, node) => {
   if (!isUseEffect(node) || node.arguments.length < 1) {
     return null;
   }
@@ -63,7 +65,11 @@ export const getEffectFnRefs = (context, node) => {
 };
 
 // Dependency array doesn't have its own scope, so collecting refs is trickier
-export function getDepArrRefs(context, node) {
+// NOTE: Despite different implementation from `getEffectBodyRefs`,
+// I believe it behaves the same due to filtering by `findVariable`.
+// TODO: Share implementation though?
+// Basically use this impl for both, instead of scope.references for other?
+export function getDependencyRefs(context, node) {
   if (!isUseEffect(node) || node.arguments.length < 2) {
     return null;
   }

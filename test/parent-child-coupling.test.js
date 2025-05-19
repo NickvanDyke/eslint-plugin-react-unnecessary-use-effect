@@ -1,7 +1,7 @@
 import { MyRuleTester, js } from "./rule-tester.js";
 import { messageIds } from "../src/messages.js";
 
-new MyRuleTester().run("/passing-state-to-parent", {
+new MyRuleTester().run("/parent-child-coupling", {
   // TODO: Test with intermediate state too
   invalid: [
     {
@@ -20,7 +20,7 @@ new MyRuleTester().run("/passing-state-to-parent", {
           messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: messageIds.avoidPassingStateToParent,
+          messageId: messageIds.avoidParentChildCoupling,
         },
       ],
     },
@@ -42,12 +42,12 @@ new MyRuleTester().run("/passing-state-to-parent", {
           messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: messageIds.avoidPassingStateToParent,
+          messageId: messageIds.avoidParentChildCoupling,
         },
       ],
     },
     {
-      name: "No argument in response to internal state change",
+      name: "No argument prop callback in response to internal state change",
       code: js`
         function Form({ onClose }) {
           const [name, setName] = useState();
@@ -66,10 +66,9 @@ new MyRuleTester().run("/passing-state-to-parent", {
         {
           messageId: messageIds.avoidInternalEffect,
         },
-        // TODO: Is `avoidPassingStateToParent` still appropriate here? Similar issue.
-        // Maybe we could rename the message to make sense here too.
-        // Or maybe `avoidManagingParentBehavior`?
-        // Maybe I can combine them into `avoidManagingParent`?
+        {
+          messageId: messageIds.avoidParentChildCoupling,
+        },
       ],
     },
     {
@@ -85,7 +84,7 @@ new MyRuleTester().run("/passing-state-to-parent", {
       `,
       errors: [
         {
-          messageId: messageIds.avoidPassingStateToParent,
+          messageId: messageIds.avoidParentChildCoupling,
         },
       ],
     },
@@ -117,19 +116,23 @@ new MyRuleTester().run("/passing-state-to-parent", {
           messageId: messageIds.avoidInternalEffect,
         },
         {
-          // Ideally we catch using state as an event handler,
+          // TODO: Ideally we catch using state as an event handler,
           // but not sure how to differentiate that
-          messageId: messageIds.avoidPassingStateToParent,
+          messageId: messageIds.avoidParentChildCoupling,
         },
       ],
     },
     {
       name: "Calling prop in response to prop change",
+      only: true,
       code: js`
         function Form({ isOpen, events }) {
 
           useEffect(() => {
             if (!isOpen) {
+              // FIX: Oh interesting, scope.references only includes events, not onClose.
+              // Thus we don't analyze it because the Identifier's direct parent is MemberExpression, not CallExpression.
+              // Solution may be to map the MemberExpression to its parent CallExpression?
               events.onClose();
             }
           }, [isOpen]);
@@ -140,7 +143,7 @@ new MyRuleTester().run("/passing-state-to-parent", {
           messageId: messageIds.avoidInternalEffect,
         },
         {
-          messageId: messageIds.avoidManagingParentBehavior,
+          messageId: messageIds.avoidParentChildCoupling,
         },
       ],
     },
