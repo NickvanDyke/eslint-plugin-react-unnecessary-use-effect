@@ -85,13 +85,14 @@ export function getDependencyRefs(context, node) {
     return null;
   }
 
-  const identifiers = getDownstreamIdentifiers(context, depsArr);
-
-  const scope = context.sourceCode.getScope(node);
-  return identifiers
-    .map((node) => [node, findVariable(scope, node)])
+  return getDownstreamIdentifiers(context, depsArr)
+    .map((node) => [
+      node,
+      findVariable(context.sourceCode.getScope(node), node),
+    ])
     .filter(([_node, variable]) => variable)
     .flatMap(([node, variable]) =>
+      // TODO: Is the filter necessary?
       variable.references.filter((ref) => ref.identifier === node),
     );
 }
