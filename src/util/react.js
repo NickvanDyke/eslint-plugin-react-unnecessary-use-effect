@@ -60,8 +60,19 @@ export const getEffectBodyRefs = (context, node) => {
     scope.references.concat(
       scope.childScopes.flatMap((childScope) => getRefs(childScope)),
     );
-  // .filter((ref) =>
-  //   ref.resolved?.defs.every((def) => def.type !== "Parameter"),
+  // .filter(
+  //   (ref) =>
+  //     isPropRef(context, ref) ||
+  //     // Filters out e.g. `element` in `list.filter((element) => ...)`.
+  //     // As well as arguments inside functions declared inside the effect. Which I guess is fine?
+  //     // AND it seems, when set as `def.type === 'Variable'` references to the functions themselves declared inside the effect?
+  //     // They have `def.type` === 'Function' or something apparently.
+  //     // TODO: Is there a more narrow way to filter out the first one? Seems prone to false positives.
+  //     // TODO: May be better to do that filtering outside of this more general function.
+  //     // This is an issue because the results of this function are used directly for isInternalEffect.
+  //     // Maybe we should just apply the isFnRef before that too? Seems appropriate.
+  //     // NOTE: `ref.resolved` is undefined for global variables, e.g. `console` in `console.log()`
+  //     (ref.resolved?.defs ?? []).every((def) => def.type !== "Parameter"),
   // );
 
   return getRefs(context.sourceCode.getScope(effectFn));
@@ -117,16 +128,17 @@ export const isPropRef = (context, ref) =>
 
 export const getCallExpr = (ref, current = ref.identifier.parent) => {
   if (current.type === "CallExpression") {
-    // Check if the callee matches the ref (either Identifier or MemberExpression)
-    if (
-      current.callee === ref.identifier ||
-      current.callee === ref.identifier.parent
-    ) {
+    // We've reached the top - confirm that the ref is the (eventual) callee, as opposed to an argument.
+    let node = ref.identifier;
+    while (node.parent.type === "MemberExpression") {
+      node = node.parent;
+    }
+
+    if (current.callee === node) {
       return current;
     }
   }
 
-  // If the current node is a MemberExpression, walk up
   if (current.type === "MemberExpression") {
     return getCallExpr(ref, current.parent);
   }
@@ -134,10 +146,10 @@ export const getCallExpr = (ref, current = ref.identifier.parent) => {
   return undefined;
 };
 
-export const getUseStateNode = (context, stateRef) => {
-  return getUpstreamVariables(context, stateRef.identifier)
+export const getUseStateNode = (context, ref) => {
+  return getUpstreamVariables(context, ref.identifier)
     .find((variable) =>
-      // WARNING: Global variables (like `JSON` in `JSON.stringify()`) have an empty `defs`; fortunately `[].some() === false`.
+      // NOTE: Global variables (like `JSON` in `JSON.stringify()`) have an empty `defs`; fortunately `[].some() === false`.
       // Also, I'm not sure so far when `defs.length > 1`... haven't seen it with shadowed variables or even redeclared variables with `var`.
       variable.defs.some(
         (def) => def.type === "Variable" && isUseState(def.node),

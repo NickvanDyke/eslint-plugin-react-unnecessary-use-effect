@@ -147,7 +147,6 @@ new MyRuleTester().run("/parent-child-coupling", {
     },
     {
       name: "Derive state from prop function",
-      only: true,
       code: js`
         function FilteredPosts({ posts }) {
           const [filteredPosts, setFilteredPosts] = useState([]);
@@ -165,8 +164,6 @@ new MyRuleTester().run("/parent-child-coupling", {
             //   ]
             // }
             setFilteredPosts(
-              // FIX: Fails because we check whether value is internal, which of course it isn't (and could never be).
-              // Now the issue is, how do we ignore it when variable.def.type === Parameter, without ignoring props that also have that property?
               posts.filter((post) => post.body !== "")
             );
           }, [posts]);

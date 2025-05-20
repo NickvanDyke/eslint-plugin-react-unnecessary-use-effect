@@ -34,7 +34,6 @@ export const rule = {
       }
 
       const effectFnRefs = getEffectBodyRefs(context, node);
-      console.log("effectFnRefs", effectFnRefs);
       const depsRefs = getDependencyRefs(context, node);
 
       if (!effectFnRefs || !depsRefs || effectFnRefs.length === 0) {
@@ -43,6 +42,7 @@ export const rule = {
 
       // TODO: Could include when we reference our own local functions that are themselves pure/internal.
       const isInternalEffect = effectFnRefs
+        .filter((ref) => isFnRef(ref)) // Only functions because they actually have effects
         .concat(depsRefs)
         .every((ref) => isStateRef(context, ref) || isPropRef(context, ref));
 
