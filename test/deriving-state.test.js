@@ -176,6 +176,76 @@ new MyRuleTester().run("/deriving-state", {
         }
       `,
     },
+    {
+      name: "From unpure function declared inside effect",
+      code: js`
+        function DoubleCounter() {
+          const [count, setCount] = useState(0);
+          const [doubleCount, setDoubleCount] = useState(0);
+
+          useEffect(() => {
+            function calculate(meow) {
+              return getMeow() * 2;
+            }
+            setDoubleCount(calculate());
+          }, [count]);
+        }
+      `,
+    },
+    {
+      name: "From unpure function declared outside effect",
+      code: js`
+        function DoubleCounter() {
+          const [count, setCount] = useState(0);
+          const [doubleCount, setDoubleCount] = useState(0);
+
+          function calculate(meow) {
+            // TODO: Issue is we don't see 'getMeow' when looking at the effect body.
+            // We'd have to follow the function reference and examine its definition.
+            return getMeow() * 2;
+          }
+
+          useEffect(() => {
+            setDoubleCount(calculate());
+          }, [count]);
+        }
+      `,
+    },
+    {
+      // TODO: Similarly, would have to follow the function reference to see if it's pure
+      name: "From pure function declared inside effect",
+      code: js`
+        function DoubleCounter() {
+          const [count, setCount] = useState(0);
+          const [doubleCount, setDoubleCount] = useState(0);
+
+          useEffect(() => {
+            function calculateDoubleCount(count) {
+              return count * 2;
+            }
+            setDoubleCount(calculateDoubleCount(count));
+          }, [count]);
+        }
+      `,
+    },
+    {
+      // TODO: Similarly, would have to follow the function reference to see if it's pure
+      name: "From pure function declared outside effect",
+      code: js`
+        function DoubleCounter() {
+          const [count, setCount] = useState(0);
+          const [doubleCount, setDoubleCount] = useState(0);
+
+          function calculateDoubleCount(count) {
+            return count * 2;
+          }
+
+          useEffect(() => {
+            setDoubleCount(calculateDoubleCount(count));
+          }, [count]);
+        }
+      `,
+    },
   ],
   invalid: [
     {
