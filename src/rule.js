@@ -40,9 +40,10 @@ export const rule = {
         return;
       }
 
-      // TODO: Could include when we reference our own local functions that are themselves pure/internal.
       const isInternalEffect = effectFnRefs
-        .filter((ref) => isFnRef(ref)) // Only functions because they actually have effects
+        // Only functions because they actually have effects.
+        // Notably this also filters out refs that are local parameters, like `items` in `list.filter((item) => ...)`.
+        .filter((ref) => isFnRef(ref))
         .concat(depsRefs)
         .every((ref) => isStateRef(context, ref) || isPropRef(context, ref));
 
